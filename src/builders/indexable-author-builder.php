@@ -32,13 +32,19 @@ class Indexable_Author_Builder implements Indexable_Builder_Interface {
 	 * Indexable_Author_Builder constructor.
 	 *
 	 * @param Author_Archive_Helper $author_archive The author archive helper.
-	 * @param Indexable_Repository  $indexable_repository The Indexable Repo.
 	 */
-	public function __construct(
-		Author_Archive_Helper $author_archive,
-		Indexable_Repository $indexable_repository
-	) {
+	public function __construct(Author_Archive_Helper $author_archive) {
 		$this->author_archive = $author_archive;
+	}
+
+	/**
+	 * Sets the indexable repository. Done to avoid circular dependencies.
+	 *
+	 * @param Indexable_Repository $indexable_repository The indexable repository.
+	 *
+	 * @required
+	 */
+	public function set_indexable_repository( Indexable_Repository $indexable_repository ) {
 		$this->indexable_repository = $indexable_repository;
 	}
 

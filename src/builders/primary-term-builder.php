@@ -4,6 +4,7 @@ namespace Yoast\WP\SEO\Builders;
 
 use Yoast\WP\SEO\Helpers\Meta_Helper;
 use Yoast\WP\SEO\Helpers\Primary_Term_Helper;
+use Yoast\WP\SEO\Models\Indexable;
 use Yoast\WP\SEO\Repositories\Primary_Term_Repository;
 
 /**
@@ -57,8 +58,9 @@ class Primary_Term_Builder implements Indexable_Builder_Interface {
 	 * @param int       $post_id The post ID.
 	 * @param Indexable $indexable unused Indexable defined by the builder interface
 	 *
-	 * @return void
+	 * @return bool|Indexable The built indexable or false if something broke.
 	 */
+
 	public function build( $post_id, Indexable $indexable ) {
 		foreach ( $this->primary_term->get_primary_term_taxonomies( $post_id ) as $taxonomy ) {
 			$this->save_primary_term( $post_id, $taxonomy->name );
