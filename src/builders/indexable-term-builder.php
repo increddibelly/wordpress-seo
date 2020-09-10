@@ -10,7 +10,7 @@ use Yoast\WP\SEO\Models\Indexable;
  *
  * Formats the term meta to indexable format.
  */
-class Indexable_Term_Builder {
+class Indexable_Term_Builder implements Indexable_Builder_Interface {
 	use Indexable_Social_Image_Trait;
 
 	/**
@@ -199,5 +199,19 @@ class Indexable_Term_Builder {
 		}
 
 		return false;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function understands( $object_type ) {
+		return $object_type === 'term';
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function priority() {
+		return 0;
 	}
 }
