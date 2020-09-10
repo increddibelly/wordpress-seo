@@ -146,17 +146,17 @@ class Indexable_Builder {
 
 		switch ( $object_type ) {
 			case 'post':
-									// prio 1
+									// prio == 0
 				$indexable = $this->post_builder->build( $object_id, $indexable );
 				if ( $indexable === false ) {
 					break;
 				}
-						// prio > 1
+						// prio > 0
 				$this->primary_term_builder->build( $object_id );
 
-				$author = $this->indexable_repository->find_by_id_and_type( $indexable->author_id, 'user', false );
+				// prio > primary term builder
 				if ( ! $author ) {
-					$this->build_for_id_and_type( $indexable->author_id, 'user' );
+					$this->author_builder->build($object_id, $indexable);
 				}
 
 				break;

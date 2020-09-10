@@ -12,7 +12,7 @@ use Yoast\WP\SEO\Repositories\Indexable_Repository;
  *
  * Formats the post meta to indexable format.
  */
-class Indexable_Post_Builder {
+class Indexable_Post_Builder implements Indexable_Builder_Interface {
 	use Indexable_Social_Image_Trait;
 
 	/**
@@ -69,7 +69,7 @@ class Indexable_Post_Builder {
 	 *
 	 * @return bool|Indexable The extended indexable. False when unable to build.
 	 */
-	public function build( $post_id, $indexable ) {
+	public function build( $post_id, Indexable $indexable ) {
 		$post = $this->post->get_post( $post_id );
 
 		if ( $post === null ) {
@@ -387,5 +387,19 @@ class Indexable_Post_Builder {
 		}
 
 		return $number_of_pages;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function understands( $object_type ) {
+		return $object_type === 'post';
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function priority() {
+		return 1;
 	}
 }

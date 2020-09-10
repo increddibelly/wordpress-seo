@@ -76,7 +76,7 @@ class Indexable_Build_Manager {
 		});
 
 		foreach($matching_builders as $builder){
-			$builder->build( $indexable, $indexable_before, $object_id );
+			$builder->build( $object_id, $indexable );
 		}
 
 		// Something went wrong building, create a false indexable.

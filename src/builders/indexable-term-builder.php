@@ -49,7 +49,7 @@ class Indexable_Term_Builder implements Indexable_Builder_Interface {
 	 *
 	 * @return bool|Indexable The extended indexable. False when unable to build.
 	 */
-	public function build( $term_id, $indexable ) {
+	public function build( $term_id, Indexable $indexable ) {
 		$term = \get_term( $term_id );
 
 		if ( $term === null || \is_wp_error( $term ) ) {

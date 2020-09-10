@@ -12,7 +12,7 @@ use Yoast\WP\SEO\Repositories\SEO_Links_Repository;
 /**
  * Post link builder.
  */
-class Indexable_Link_Builder implements Indexable_Builder_Interface {
+class Indexable_Link_Builder {
 
 	/**
 	 * The SEO links repository.
@@ -391,13 +391,5 @@ class Indexable_Link_Builder implements Indexable_Builder_Interface {
 		foreach ( $counts as $count ) {
 			$this->indexable_repository->update_incoming_link_count( $count['target_indexable_id'], $count['incoming'] );
 		}
-	}
-
-	public function understands( $object_type ) {
-		// TODO: Implement understands() method.
-	}
-
-	public function priority() {
-		// TODO: Implement priority() method.
 	}
 }

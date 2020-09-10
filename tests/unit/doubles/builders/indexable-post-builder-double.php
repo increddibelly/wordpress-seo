@@ -8,7 +8,7 @@ use Yoast\WP\SEO\Models\Indexable;
 /**
  * Class Indexable_Post_Builder_Double.
  */
-class Indexable_Post_Builder_Double extends Indexable_Post_Builder {
+class Indexable_Post_Builder_Double {
 
 	/**
 	 * @inheritDoc

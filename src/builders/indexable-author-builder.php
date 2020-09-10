@@ -4,13 +4,14 @@ namespace Yoast\WP\SEO\Builders;
 
 use Yoast\WP\SEO\Helpers\Author_Archive_Helper;
 use Yoast\WP\SEO\Models\Indexable;
+use Yoast\WP\SEO\Repositories\Indexable_Repository;
 
 /**
  * Author Builder for the indexables.
  *
  * Formats the author meta to indexable format.
  */
-class Indexable_Author_Builder {
+class Indexable_Author_Builder implements Indexable_Builder_Interface {
 	use Indexable_Social_Image_Trait;
 
 	/**
@@ -21,12 +22,24 @@ class Indexable_Author_Builder {
 	private $author_archive;
 
 	/**
+	 * The Indexable repository.
+	 *
+	 * @var Indexable_Repository
+	 */
+	private $indexable_repository;
+
+	/**
 	 * Indexable_Author_Builder constructor.
 	 *
 	 * @param Author_Archive_Helper $author_archive The author archive helper.
+	 * @param Indexable_Repository  $indexable_repository The Indexable Repo.
 	 */
-	public function __construct( Author_Archive_Helper $author_archive ) {
+	public function __construct(
+		Author_Archive_Helper $author_archive,
+		Indexable_Repository $indexable_repository
+	) {
 		$this->author_archive = $author_archive;
+		$this->indexable_repository = $indexable_repository;
 	}
 
 	/**
@@ -35,9 +48,14 @@ class Indexable_Author_Builder {
 	 * @param int       $user_id   The user to retrieve the indexable for.
 	 * @param Indexable $indexable The indexable to format.
 	 *
-	 * @return Indexable The extended indexable.
+	 * @return bool|Indexable The extended indexable.
 	 */
 	public function build( $user_id, Indexable $indexable ) {
+		$author = $this->indexable_repository->find_by_id_and_type( $indexable->author_id, 'user', false );
+		if ( $author ) {
+			return $author;
+		}
+
 		$meta_data = $this->get_meta_data( $user_id );
 
 		$indexable->object_id              = $user_id;
@@ -123,5 +141,25 @@ class Indexable_Author_Builder {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determines whether this builder understands the passed object type.
+	 *
+	 * @param string $object_type The object type to check.
+	 *
+	 * @return bool Whether or not this builder understands the $object_type.
+	 */
+	public function understands( $object_type ) {
+		return $object_type === 'user' || $object_type === 'post';
+	}
+
+	/**
+	 * Returns the build priority.
+	 *
+	 * @return int The build priority.
+	 */
+	public function priority() {
+		return 2;
 	}
 }

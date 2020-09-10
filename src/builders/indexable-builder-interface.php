@@ -33,5 +33,17 @@ interface Indexable_Builder_Interface {
 	 *
 	 * @return Indexable The built indexable.
 	 */
-	public function build( $object_id, $indexable );
+	public function build( $object_id, Indexable $indexable );
 }
+
+
+/*
+ *
+	nice to have:
+
+	const int BUILDER_PRIORITY_FIRST = 0;
+	const int BUILDER_PRIORITY_PRETTY_HIGH = 1;
+	const int BUILDER_PRIORITY_MAYBE_LATER = 2;
+
+	this prevents arbitrary numbers messing up the execution priority
+ */
