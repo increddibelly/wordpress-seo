@@ -31,6 +31,7 @@ class Container_Compiler {
 			}
 
 			$container_builder = new ContainerBuilder();
+			$container_builder->addCompilerPass( new Interface_Injection_Pass() );
 			$container_builder->addCompilerPass( new Loader_Pass() );
 			$loader = new Custom_Loader( $container_builder );
 			$loader->load( 'config/dependency-injection/services.php' );
