@@ -2,6 +2,8 @@
 
 namespace Yoast\WP\SEO\Builders;
 
+use Yoast\WP\SEO\Models\Indexable;
+
 /**
  * Interface Indexable_Builder_Interface
  *
@@ -31,7 +33,7 @@ interface Indexable_Builder_Interface {
 	 * @param int $object_id       The object ID.
 	 * @param Indexable $indexable The indexable to build.
 	 *
-	 * @return Indexable The built indexable.
+	 * @return bool|Indexable The built indexable or false if something broke.
 	 */
 	public function build( $object_id, Indexable $indexable );
 }

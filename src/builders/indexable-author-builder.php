@@ -48,7 +48,7 @@ class Indexable_Author_Builder implements Indexable_Builder_Interface {
 	 * @param int       $user_id   The user to retrieve the indexable for.
 	 * @param Indexable $indexable The indexable to format.
 	 *
-	 * @return bool|Indexable The extended indexable.
+	 * @return bool|Indexable The extended indexable or false if something broke.
 	 */
 	public function build( $user_id, Indexable $indexable ) {
 		$author = $this->indexable_repository->find_by_id_and_type( $indexable->author_id, 'user', false );
