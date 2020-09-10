@@ -150,7 +150,7 @@ class Indexable_Builder {
 				if ( $indexable === false ) {
 					break;
 				}
-				$this->primary_term_builder->build( $object_id );
+				$this->primary_term_builder->build( $object_id, $indexable );
 
 				$author = $this->indexable_repository->find_by_id_and_type( $indexable->author_id, 'user', false );
 				if ( ! $author ) {

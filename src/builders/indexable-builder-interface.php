@@ -23,9 +23,11 @@ interface Indexable_Builder_Interface {
 	/**
 	 * Returns the build priority.
 	 *
-	 * @return int The build priority.
+	 * @param string $object_type The type to determine priority for.
+	 *
+	 * @return int The build priority for the $object_type.
 	 */
-	public function priority();
+	public function priority( $object_type );
 
 	/**
 	 * Builds the indexable.

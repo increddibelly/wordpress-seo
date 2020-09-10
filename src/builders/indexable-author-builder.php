@@ -156,10 +156,16 @@ class Indexable_Author_Builder implements Indexable_Builder_Interface {
 
 	/**
 	 * Returns the build priority.
+	 * This builder is not intended to be the first to run on posts.
+	 * This builder is intended to run first on users.
 	 *
+	 * @param string $object_type The object type to determine priority for.
 	 * @return int The build priority.
 	 */
-	public function priority() {
-		return 2;
+	public function priority( $object_type) {
+		switch( $object_type ) {
+			case 'user' : return 0;
+			case 'post' : return 2;
+		}
 	}
 }

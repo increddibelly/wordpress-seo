@@ -209,9 +209,13 @@ class Indexable_Term_Builder implements Indexable_Builder_Interface {
 	}
 
 	/**
-	 * @inheritDoc
+	 * Returns the build priority.
+	 * This builder is intended to run first on terms.
+	 *
+	 * @param string $object_type The object type to determine priority for.
+	 * @return int The build priority.
 	 */
-	public function priority() {
+	public function priority( $object_type ) {
 		return 0;
 	}
 }

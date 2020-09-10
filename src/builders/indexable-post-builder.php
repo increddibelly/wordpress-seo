@@ -397,9 +397,13 @@ class Indexable_Post_Builder implements Indexable_Builder_Interface {
 	}
 
 	/**
-	 * @inheritDoc
+	 * Returns the build priority.
+	 * This builder is intended to run FIRST on posts
+	 *
+	 * @param string $object_type The object type to determine priority for.
+	 * @return int The build priority.
 	 */
-	public function priority() {
-		return 1;
+	public function priority( $object_type ) {
+		return 0;
 	}
 }

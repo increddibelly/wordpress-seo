@@ -71,8 +71,8 @@ class Indexable_Build_Manager {
 
 		// order by builder priority, to make the lowest priority go first.
 		usort($matching_builder,
-			function ($builder, $other_builder) {
-			return $builder->priority() < $other_builder->priority();
+			function ($builder, $other_builder) use ($object_type) {
+			return $builder->priority( $object_type ) < $other_builder->priority( $object_type );
 		});
 
 		foreach($matching_builders as $builder){

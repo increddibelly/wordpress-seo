@@ -11,7 +11,7 @@ use Yoast\WP\SEO\Repositories\Primary_Term_Repository;
  *
  * Creates the primary term for a post.
  */
-class Primary_Term_Builder {
+class Primary_Term_Builder implements Indexable_Builder_Interface {
 
 	/**
 	 * The primary term repository.
@@ -54,11 +54,12 @@ class Primary_Term_Builder {
 	/**
 	 * Formats and saves the primary terms for the post with the given post id.
 	 *
-	 * @param int $post_id The post ID.
+	 * @param int       $post_id The post ID.
+	 * @param Indexable $indexable unused Indexable defined by the builder interface
 	 *
 	 * @return void
 	 */
-	public function build( $post_id ) {
+	public function build( $post_id, Indexable $indexable ) {
 		foreach ( $this->primary_term->get_primary_term_taxonomies( $post_id ) as $taxonomy ) {
 			$this->save_primary_term( $post_id, $taxonomy->name );
 		}
@@ -92,5 +93,27 @@ class Primary_Term_Builder {
 		$primary_term->taxonomy = $taxonomy;
 		$primary_term->blog_id  = \get_current_blog_id();
 		$primary_term->save();
+	}
+
+	/**
+	 * Determines whether this builder understands the passed object type.
+	 *
+	 * @param string $object_type The object type to check.
+	 *
+	 * @return bool Whether or not this builder understands the $object_type.
+	 */
+	public function understands( $object_type ) {
+		return $object_type === 'post';
+	}
+
+	/**
+	 * Returns the build priority.
+	 * This builder is not intended to be the first to run on posts.
+	 *
+	 * @param string $object_type The object type to determine priority for.
+	 * @return int The build priority.
+	 */
+	public function priority( $object_type ) {
+		return 1;
 	}
 }
