@@ -10,70 +10,13 @@ use Yoast\WP\SEO\Repositories\Indexable_Repository;
  *
  * Creates all the indexables.
  */
-class Indexable_Builder {
-
+class Indexable_Build_Manager {
 	/**
-	 * The author builder.
+	 * The array of all indexable builders we have
 	 *
-	 * @var Indexable_Author_Builder
+	 * @var Indexable_Builder_Interface[]
 	 */
-	private $author_builder;
-
-	/**
-	 * The post builder.
-	 *
-	 * @var Indexable_Post_Builder
-	 */
-	private $post_builder;
-
-	/**
-	 * The term builder.
-	 *
-	 * @var Indexable_Term_Builder
-	 */
-	private $term_builder;
-
-	/**
-	 * The home page builder.
-	 *
-	 * @var Indexable_Home_Page_Builder
-	 */
-	private $home_page_builder;
-
-	/**
-	 * The post type archive builder.
-	 *
-	 * @var Indexable_Post_Type_Archive_Builder
-	 */
-	private $post_type_archive_builder;
-
-	/**
-	 * The data archive builder.
-	 *
-	 * @var Indexable_Date_Archive_Builder
-	 */
-	private $date_archive_builder;
-
-	/**
-	 * The system page builder.
-	 *
-	 * @var Indexable_System_Page_Builder
-	 */
-	private $system_page_builder;
-
-	/**
-	 * The indexable hierarchy builder.
-	 *
-	 * @var Indexable_Hierarchy_Builder
-	 */
-	private $hierarchy_builder;
-
-	/**
-	 * The primary term builder
-	 *
-	 * @var Primary_Term_Builder
-	 */
-	private $primary_term_builder;
+	private $builders;
 
 	/**
 	 * The indexable repository.
@@ -85,37 +28,13 @@ class Indexable_Builder {
 	/**
 	 * Returns the instance of this class constructed through the ORM Wrapper.
 	 *
-	 * @param Indexable_Author_Builder            $author_builder            The author builder for creating missing indexables.
-	 * @param Indexable_Post_Builder              $post_builder              The post builder for creating missing indexables.
-	 * @param Indexable_Term_Builder              $term_builder              The term builder for creating missing indexables.
-	 * @param Indexable_Home_Page_Builder         $home_page_builder         The front page builder for creating missing indexables.
-	 * @param Indexable_Post_Type_Archive_Builder $post_type_archive_builder The post type archive builder for creating missing indexables.
-	 * @param Indexable_Date_Archive_Builder      $date_archive_builder      The date archive builder for creating missing indexables.
-	 * @param Indexable_System_Page_Builder       $system_page_builder       The search result builder for creating missing indexables.
-	 * @param Indexable_Hierarchy_Builder         $hierarchy_builder         The hierarchy builder for creating the indexable hierarchy.
-	 * @param Primary_Term_Builder                $primary_term_builder      The primary term builder for creating primary terms for posts.
 	 *
+	 * @param Indexable_Builder_Interface ...$builders All the indexable builders we know.
 	 */
 	public function __construct(
-		Indexable_Author_Builder $author_builder,
-		Indexable_Post_Builder $post_builder,
-		Indexable_Term_Builder $term_builder,
-		Indexable_Home_Page_Builder $home_page_builder,
-		Indexable_Post_Type_Archive_Builder $post_type_archive_builder,
-		Indexable_Date_Archive_Builder $date_archive_builder,
-		Indexable_System_Page_Builder $system_page_builder,
-		Indexable_Hierarchy_Builder $hierarchy_builder,
-		Primary_Term_Builder $primary_term_builder
+		Indexable_Builder_Interface ...$builders
 	) {
-		$this->author_builder            = $author_builder;
-		$this->post_builder              = $post_builder;
-		$this->term_builder              = $term_builder;
-		$this->home_page_builder         = $home_page_builder;
-		$this->post_type_archive_builder = $post_type_archive_builder;
-		$this->date_archive_builder      = $date_archive_builder;
-		$this->system_page_builder       = $system_page_builder;
-		$this->hierarchy_builder         = $hierarchy_builder;
-		$this->primary_term_builder      = $primary_term_builder;
+		$this->builders = $builders;
 	}
 
 	/**
@@ -144,32 +63,20 @@ class Indexable_Builder {
 			->query()
 			->create( $indexable->as_array() );
 
-		switch ( $object_type ) {
-			case 'post':
-									// prio 1
-				$indexable = $this->post_builder->build( $object_id, $indexable );
-				if ( $indexable === false ) {
-					break;
-				}
-						// prio > 1
-				$this->primary_term_builder->build( $object_id );
+		// find all Builders that understand the current object.
+		$matching_builders = array_filter($this->builders,
+			function ($builder) use ($object_type) {
+			return $builder->understands($object_type);
+		});
 
-				$author = $this->indexable_repository->find_by_id_and_type( $indexable->author_id, 'user', false );
-				if ( ! $author ) {
-					$this->build_for_id_and_type( $indexable->author_id, 'user' );
-				}
+		// order by builder priority, to make the lowest priority go first.
+		usort($matching_builder,
+			function ($builder, $other_builder) {
+			return $builder->priority() < $other_builder->priority();
+		});
 
-				break;
-			case 'user':
-				$indexable = $this->author_builder->build( $object_id, $indexable );
-				break;
-			case 'term':
-				$indexable = $this->term_builder->build( $object_id, $indexable );
-				break;
-			case 'primary_term' :
-
-			default:
-				return $indexable;
+		foreach($matching_builders as $builder){
+			$builder->build( $indexable, $indexable_before, $object_id );
 		}
 
 		// Something went wrong building, create a false indexable.
